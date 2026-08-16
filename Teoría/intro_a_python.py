@@ -22,15 +22,17 @@ Descripción:
 =============================================================================
 """
 
-# Importación de módulos que utilizaremos en nuesto testbench:
+# Importación de módulos que utilizaremos en nuestro testbench:
 # Una vez invocadas estas funciones, podremos utilizar los módulos a través del identificador que indicamos luego de "as". 
-# Por ejemplo np.linspace() -> función linspace dentro e NumPy
+# Por ejemplo np.linspace() -> función linspace dentro de NumPy
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pdsmodulos as pds
 import numbers
-import time # Para medición de tiempos (TicToc)
+import sys
+import argparse
+import time
 
 
 ###################################
@@ -71,8 +73,8 @@ def funcion_que_concatena(s1, s2 = ''):
 #####################################
 
 # flotantes, enteros o tipos numéricos
-Fs = 1000.0 # Hz
-N = 1000 # muestras
+Fs = 1000.0 # Hz (Frecuencia de muestreo)
+N = 1000 # muestras (Cantidad total de puntos)
 
 un_texto = 'señal 0'
 otro_texto = "señal 1"
@@ -101,23 +103,21 @@ mi_lista[-1]
 # el último
 mi_lista[-2]
 
-print(mi_lista)
+print("Lista creada:", mi_lista)
 
 # también podés seleccionar rangos de elementos:
 
 # del primero al tercero
-print(mi_lista[0:3])
-#print(mi_lista[:3]) # otra forma
+print("Del 1ro al 3ro:", mi_lista[0:3])
 
 # los pares
-print(mi_lista[0::2])
-#print(mi_lista[::2]) # otra forma
+print("Pares:", mi_lista[0::2])
 
 # los impares
-print(mi_lista[1::2])
+print("Impares:", mi_lista[1::2])
     
 # recorrerla al revés
-print(mi_lista[::-1])
+print("Al revés:", mi_lista[::-1])
     
 # podemos aprovechar que sea iterable con una sintaxis inline y muy 
 # práctica de Python
@@ -127,7 +127,7 @@ tipo = [ type(aa) for aa in mi_lista ]
 
 
 # Tipos de datos del módulo Numpy: es un módulo para agregar los tipos 
-# numéricos y métodos que se utilizan en Matlab para el álgebra matricial.
+# numéricos y métodos que se utilizan para el álgebra matricial.
 # Matrices, vectores, operaciones algebraicas, direccionamiento, etc.
 
 # vector con una secuencia de enteros y flotantes
@@ -143,7 +143,7 @@ vector_tiempo = np.arange(5.0, 10.0, 0.1)
 # para simular por ejemplo un eje temporal o frecuencial
 
 N = 1000
-Fs = 1000
+Fs = 1000.0
 vector_tiempo = np.arange(0.0, N/Fs, 1/Fs)
 
 # en este caso, el vector_tiempo podría ser los tiempos en los que un
@@ -176,14 +176,8 @@ es_numero = [ isinstance(aa, numbers.Number) for aa in mi_lista ]
 es_texto = [ isinstance(aa, str) for aa in mi_lista ]
 
 # llamado a funciones
-
-# aa = 1, bb = 2 y cc ??
-print(funcion_que_suma(1, 2))
-
-# lo mismo, pero notar que podemos asegurar especificar a qué argumento
-# nos referimos cuando invocamos a una función, como también que los argumentos
-# que no reciben valores, toman los valores por defecto ( bb = 0).
-print(funcion_que_suma(1, cc = 2))
+print("Suma 1 + 2:", funcion_que_suma(1, 2))
+print("Suma 1 + cc=2:", funcion_que_suma(1, cc = 2))
 
 ##################################
 # Algunas estructuras de control #
@@ -191,36 +185,26 @@ print(funcion_que_suma(1, cc = 2))
 
 # otra forma de recorrer un tipo de dato iterable
 for aa in mi_lista:
-    
     print(aa)
 
 # recorremos listas al estilo C mediante índices
-
 for ii in range(len(mi_lista)):
-    
     print(mi_lista[ii])
     print(mi_lista[len(mi_lista)-ii-1])
 
-
 # lo mismo, pero más estilo Python se pueden recorrer tantos iterables 
 # como quieras, solo tenés que empaquetarlos con *zip*
-
 for aa,bb in zip(mi_lista, mi_lista[::-1]):
-    
-    print(aa)
-    print(bb)
-
-# luego de que te acostumbres un poco, esta última forma te parecerá
-# más legible
+    print(aa, "<->", bb)
 
 
 # =============================================================================
-# %%% SECCIÓN AMPLIADA 1: HERRAMIENTAS CLAVE DE LOS TESTBENCHS Y PDS %%%
+# %%% HERRAMIENTAS Y SINTAXIS CLAVE DE LOS TESTBENCHS DE APS %%%
 # =============================================================================
 
 #%% Generación de Grillas de Tiempo con np.linspace
 # np.linspace(inicio, fin, cantidad_puntos) es la forma recomendada en los testbenchs
-ts = 1/Fs # tiempo entre muestras
+ts = 1/Fs # tiempo entre muestras (período de muestreo)
 tt = np.linspace(0, (N-1)*ts, N) # grilla temporal de 0 a 1 segundo
 
 #%% Generación de Señales Senoidales y Ruido Gaussiano
@@ -242,58 +226,13 @@ sig_props = {
 # Generar etiquetas de descripción de forma programática (comprensión de listas)
 sig_props['descripcion'] = [ str(f) + ' Hz' for f in sig_props['frecuencia'] ]
 
-#%% Graficación de Señales con Matplotlib
+#%% Graficación Profesional de Señales con Matplotlib
 plt.figure(figsize=(10, 4))
 plt.plot(tt, seno, label='Senoidal Pura (10 Hz)', color='blue')
 plt.plot(tt, seno + ruido, label='Senoidal + Ruido', color='orange', alpha=0.6)
-plt.title('Simulación de Señal en el Tiempo (PDS)')
+plt.title('Simulación de Señal en el Tiempo (APS)')
 plt.xlabel('Tiempo [segundos]')
 plt.ylabel('Amplitud [V]')
 plt.legend(loc='upper right')
-plt.grid(True)
-plt.show()
-
-
-# =============================================================================
-# %%% SECCIÓN AMPLIADA 2: CONCEPTOS GENÉRICOS ÚTILES (DE MÉTODOS NUMÉRICOS) %%%
-# =============================================================================
-
-#%% 1. Funciones Anónimas / Rápidas en una sola línea (Lambda)
-# Útil para definir expresiones matemáticas rápidas sin hacer un def formal
-mi_seno_rapido = lambda t: np.sin(2 * np.pi * 5 * t)
-y_lambda = mi_seno_rapido(tt)
-
-#%% 2. Medición de Tiempo de Ejecución (Medir rendimiento / TicToc)
-start_time = time.time() # Tic (guarda el tiempo actual)
-# Simular proceso o algoritmo pesado
-time.sleep(0.01)
-elapsed = time.time() - start_time # Toc (calcula la diferencia)
-# Formato f-string para imprimir variables formateadas fácilmente
-print(f"Tiempo transcurrido: {elapsed:.4f} segundos")
-
-#%% 3. Diferencia entre Operaciones Elemento a Elemento vs Producto Matricial en NumPy
-# En MATLAB se usa .* ./ .^
-# En Python / NumPy:
-A = np.array([[1, 2], [3, 4]])
-B = np.array([[10, 20], [30, 40]])
-
-prod_elem = A * B      # Multiplicación elemento a elemento (como .* en MATLAB)
-div_elem = A / B       # División elemento a elemento (como ./ en MATLAB)
-pot_elem = A ** 2      # Potencia elemento a elemento (como .^ en MATLAB)
-prod_mat = A @ B       # Producto matricial de álgebra lineal (filas por columnas)
-mat_trans = A.T        # Matriz transpuesta (como ' en MATLAB)
-
-mat_ones = np.ones((3, 2))  # Crear matriz de unos
-mat_zeros = np.zeros((3, 2)) # Crear matriz de ceros
-
-#%% 4. Opciones Avanzadas de Gráficos en Matplotlib
-plt.figure(figsize=(10, 4))
-plt.plot(tt[:100], seno[:100], 'r-', label='Línea roja continua', linewidth=1.5)
-plt.plot(tt[:100], (seno+ruido)[:100], 'b--', label='Línea azul punteada', alpha=0.7)
-plt.axhline(0, color='k', linewidth=0.8, linestyle=':') # Línea horizontal de referencia en 0 (eje X)
-plt.title("Estilos de líneas y referencias en Matplotlib")
-plt.xlabel("Tiempo [s]")
-plt.ylabel("Voltios [V]")
-plt.legend(loc="upper right")
 plt.grid(True)
 plt.show()

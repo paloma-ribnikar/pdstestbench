@@ -22,9 +22,10 @@ import numpy as np
 #import scipy.signal as sig
 import matplotlib as mpl
 # la siguiente línea solo afecta en caso que lo quisiéramos correr desde la línea de comandos
-mpl.use('Qt5Agg')
+# mpl.use('Qt5Agg')
 
 import matplotlib.pyplot as plt
+
 import pdsmodulos as pds
 
 
@@ -168,12 +169,12 @@ elif args.signal_type == 'ruido':
 
 else:
 
-    print("Tipo de señal no implementado.")        
-    exit(1)
+    import sys
+    sys.exit(1)
     
 # Invocamos a nuestro testbench exclusivamente: 
 my_testbench( sig_props )
-exit(0)
-exit(0)
+# sys.exit(0)
+
     
 

@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-TS7: Filtrado Digital de Señales Biomédicas (ECG)
-Análisis y Procesamiento de Señales - UNSAM
-Autores: Olivia Weihmuller, Luz Romero Marchione y Paloma Ribnikar Diaz
-"""
-
-
-# ======================================================================
-# BLOQUE DE CÓDIGO 1
-# ======================================================================
-
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import signal as sig
@@ -46,12 +34,6 @@ plt.ylabel('Amplitud')
 plt.grid()
 plt.show()
 
-
-
-# ======================================================================
-# BLOQUE DE CÓDIGO 2
-# ======================================================================
-
 #%% Diseño de los filtros IIR
 
 wp1 = 1    #[Hz]
@@ -85,12 +67,6 @@ sos_cauer = sig.iirdesign(
 print(f"Butterworth:   {sos_butt.shape[0]} SOS  -> Orden total: {sos_butt.shape[0]*2}")
 print(f"Chebyshev II:  {sos_cheby2.shape[0]} SOS  -> Orden total: {sos_cheby2.shape[0]*2}")
 print(f"Cauer:         {sos_cauer.shape[0]} SOS  -> Orden total: {sos_cauer.shape[0]*2}")
-
-
-
-# ======================================================================
-# BLOQUE DE CÓDIGO 3
-# ======================================================================
 
 #%% Funciones de visualización y vector ff
 
@@ -215,12 +191,6 @@ ax_retardo.legend()
 
 plt.show()
 
-
-
-# ======================================================================
-# BLOQUE DE CÓDIGO 4
-# ======================================================================
-
 #%% Aplicar filtros IIR al ECG
 
 # Filtrado hacia adelante y hacia atrás con sosfiltfilt
@@ -251,12 +221,6 @@ plt.ylabel('Amplitud')
 plt.legend(loc='upper right')
 plt.grid()
 plt.show()
-
-
-
-# ======================================================================
-# BLOQUE DE CÓDIGO 5
-# ======================================================================
 
 # FIR DESIGN
 
@@ -398,12 +362,6 @@ ax_zoom.set_xlim(0, 2)
 
 plt.show()
 
-
-
-# ======================================================================
-# BLOQUE DE CÓDIGO 6
-# ======================================================================
-
 #%% FIR design Least Squares
 
 taps_firls = 2251
@@ -418,12 +376,6 @@ b_firls = sig.firls(
     fs=fs_ecg
 )
 
-
-
-# ======================================================================
-# BLOQUE DE CÓDIGO 7
-# ======================================================================
-
 #%% FIR design Parks-McClellan
 
 taps_remez = 1251
@@ -435,12 +387,6 @@ b_remez = sig.remez(
     weight=[100.0, 10.0, 100.0],
     fs=fs_ecg
 )
-
-
-
-# ======================================================================
-# BLOQUE DE CÓDIGO 8
-# ======================================================================
 
 #%% Verificación conjunta de la plantilla FIR
 
@@ -541,12 +487,6 @@ ax_zoom.set_xlim(0, 2)
 
 plt.show()
 
-
-
-# ======================================================================
-# BLOQUE DE CÓDIGO 9
-# ======================================================================
-
 #%% Comparación de fase y retardo de grupo FIR
 
 fig, (ax_fase, ax_retardo) = plt.subplots(
@@ -603,4 +543,3 @@ ax_retardo.grid()
 ax_retardo.legend()
 
 plt.show()
-
